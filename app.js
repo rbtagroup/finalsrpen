@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.classList.toggle("light-mode");
         localStorage.setItem(key, document.body.classList.contains("light-mode") ? "light" : "dark");
         updateThemeLabel();
-        try{ renderHistory(); }catch(_e){}
+        // history removed
       });
     }
   })();
@@ -81,35 +81,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (el) el.innerHTML = '<svg class="icon"><use href="'+ico+'"/></svg> ' + label;
   }
 
-  // === HISTORY ===
-  const HISTORY_KEY = "rbTaxiHistory";
-  function pushHistory(entry) {
-    try {
-      const arr = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
-      arr.unshift(entry);
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(arr.slice(0,10)));
-    } catch(_e){}
-  }
-  function renderHistory() {
-    if (!historyBox || !historyList) return;
-    const arr = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
-    if (!arr.length) { historyBox.classList.add("hidden"); return; }
-    const shiftMap = { "den":"Denní","noc":"Noční","odpo":"Odpolední","pul":"1/2 směna" };
-    const rows = arr.map(e => `
-      <div style="display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,.15)">
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:700">${e.datum} – ${e.driver} (${shiftMap[e.shift] || e.shift})</div>
-          <div style="opacity:.85">RZ ${e.rz || "-"} • KM ${e.km ?? "-"} • Tržba ${e.trzba} Kč • K odevzdání ${e.kOdevzdani.toFixed(2)} Kč • Výplata ${e.vyplata.toFixed(2)} Kč</div>
-        </div>
-        <button type="button" class="secondary" onclick="navigator.clipboard && navigator.clipboard.writeText(this.previousElementSibling.innerText).catch(()=>{})">Kopírovat</button>
-      </div>
-    `).join("");
-    historyList.innerHTML = rows;
-    historyBox.classList.remove("hidden");
-  }
-  try { renderHistory(); } catch(_e){}
+  // === HISTORY REMOVED ===
 
-  // === SUBMIT ===
+// === SUBMIT ===
   if (form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -159,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="hr"></div>
         <div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-box"/></svg></span> K odevzdání:</div><div class="val money-blue">${kOdevzdani.toFixed(2)} Kč</div></div>
         <div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-cash"/></svg></span> Výplata řidiče:</div><div class="val money-green">${vyplata.toFixed(2)} Kč</div></div>
-        ${nedoplatek ? `<div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-flag"/></svg></span> Doplatek do minima:</div><div class="val money-red">${doplatek.toFixed(2)} Kč</div></div>` : ``}
+        ${nedoplatek ? `<div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-flag"/></svg></span> Doplatek řidiče na KM:</div><div class="val money-red">${doplatek.toFixed(2)} Kč</div></div>` : ``}
         <div class="note">
           <label for="note"><span class="ico"><svg class="icon"><use href="#icon-doc"/></svg></span> <strong>Poznámka ke směně:</strong></label>
           <textarea id="note" rows="3" placeholder="Volitelná poznámka..."></textarea>
