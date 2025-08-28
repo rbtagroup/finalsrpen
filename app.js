@@ -14,8 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("calcForm");
   const output = document.getElementById("output");
   const actions = document.getElementById("actions");
-  const historyBox = document.getElementById("history");
-  const historyList = document.getElementById("historyList") || (historyBox && historyBox.querySelector("#historyList"));
+  const historyBox = document.getElementById("history") /* may be null */;
+  const historyList = document.getElementById("historyList") /* may be null */ || (historyBox && historyBox.querySelector("#historyList"));
 
   const resetBtn = document.getElementById("resetBtn");
 const shareBtn = document.getElementById("shareBtn");
@@ -27,7 +27,7 @@ const shareBtn = document.getElementById("shareBtn");
   const kmStartEl = document.getElementById("kmStart");
   const kmEndEl = document.getElementById("kmEnd");
   const kmRealEl = document.getElementById("kmReal");
-  const kmEl = document.getElementById("km");
+  const kmEl = null; // legacy km removed/* may be null */;
   const rzEl = document.getElementById("rz");
   function syncKm() {
     const s = parseFloat((kmStartEl?.value || "0").replace(",", ".")) || 0;
@@ -270,7 +270,7 @@ try {
     const keepName = document.getElementById("driverName")?.value || "";
     form?.reset();
     if (keepName) document.getElementById("driverName").value = keepName;
-    const note = document.getElementById("note");
+    const note = document.getElementById("note") /* may be null */;
     if (note) note.value = "";
     output?.classList.add("hidden");
     actions?.classList.add("hidden");
@@ -295,8 +295,7 @@ try {
       alert("Sdílení selhalo: " + (e && e.message ? e.message : e));
     }
   });
-
-  if (pdfBtn) pdfBtn.addEventListener("click", () => {
+=> {
     const node = output;
     if (!node || node.classList.contains("hidden")) { alert("Nejprve vypočítejte výčetku."); return; }
     html2canvas(node, { scale: 2, useCORS: true }).then(canvas => {
