@@ -15,6 +15,25 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script defer src="app.js?v=v13_hardfix_20250821103429?v=v10_ultra_fix_20250820194050?v=v9_ultra_20250820192037"></script>
+
+    <style id="captureStyles">
+      /* capture-export styles */
+      .capture-export, .capture-export * {
+        color: #111 !important;
+        background: #ffffff !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+        -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+      }
+      .capture-export .accent-odev .val,
+      .capture-export .accent-pay .val,
+      .capture-export .accent-doplatek .val {
+        font-weight: 700;
+      }
+      .capture-export .row { border-color: #ccc !important; }
+    </style>
+
 </head>
 <body>
 
@@ -130,5 +149,66 @@
   
     <footer id="appVersion" style="text-align:center;color:#9aa0a6;margin:10px 0;font-size:12px;">RB TAXI Mobile v9_ultra_20250820192037</footer>
 </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  try {
+    var btn = document.getElementById('shareImgBtn');
+    if (!btn) return;
+    var clone = btn.cloneNode(true);
+    btn.parentNode.replaceChild(clone, btn);
+    btn = clone;
+
+    btn.addEventListener('click', function(ev){
+      ev.preventDefault(); ev.stopImmediatePropagation();
+      try { if (typeof computeAndRender === 'function') computeAndRender(); } catch(_){}
+
+      var output = document.getElementById('output') || document.querySelector('.output') || document.body;
+      if (!output || typeof html2canvas === 'undefined') return;
+
+      var root = document.documentElement;
+      var prevTheme = root.getAttribute('data-theme');
+      root.setAttribute('data-theme', 'light');
+      output.classList.add('capture-export');
+
+      var scale = Math.max(2, Math.floor(window.devicePixelRatio || 2)) + 1;
+      html2canvas(output, { scale: scale, backgroundColor: '#ffffff', useCORS: true })
+        .then(function(canvas){
+          return new Promise(function(resolve, reject){
+            canvas.toBlob(function(blob){
+              if (!blob) return reject(new Error('PNG se nepodařilo vytvořit.'));
+              var file = new File([blob], 'vycetka.png', { type: 'image/png' });
+
+              if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({ files: [file], title: 'Výčetka řidiče', text: 'Výčetka řidiče (PNG)' }).then(resolve).catch(reject);
+              } else if (navigator.clipboard && window.ClipboardItem) {
+                navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+                  .then(function(){ alert('Obrázek výčetky byl zkopírován do schránky.'); resolve(); })
+                  .catch(function(){
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a'); a.href = url; a.download = 'vycetka.png';
+                    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+                    resolve();
+                  });
+              } else {
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a'); a.href = url; a.download = 'vycetka.png';
+                document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+                resolve();
+              }
+            }, 'image/png');
+          });
+        })
+        .catch(function(e){ alert('Sdílení obrázku selhalo: ' + (e && e.message ? e.message : e)); })
+        .finally(function(){
+          output.classList.remove('capture-export');
+          if (prevTheme !== null) root.setAttribute('data-theme', prevTheme);
+          else root.removeAttribute('data-theme');
+        });
+    }, true);
+  } catch(e) {}
+});
+</script>
+
 </body>
 </html>
