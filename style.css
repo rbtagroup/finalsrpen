@@ -133,8 +133,10 @@ label .ico, #output .key .ico {
 button .icon{ margin-right:8px; }
 
 
-/* === Accents for key finance rows === */
-.row.accent-odev { background: rgba(255, 215, 0, 0.12); border-left: 3px solid rgba(255, 215, 0, 0.6); }
-.row.accent-pay { background: rgba(0, 200, 83, 0.12); border-left: 3px solid rgba(0, 200, 83, 0.6); }
-.row.accent-doplatek { background: rgba(255, 82, 82, 0.12); border-left: 3px solid rgba(255, 82, 82, 0.6); }
+
+
+/* === Accents for key finance rows (premium palette) === */
+.row.accent-odev { background: rgba(24, 119, 242, 0.12); border-left: 3px solid rgba(24, 119, 242, 0.6); }
+.row.accent-pay { background: rgba(16, 185, 129, 0.12); border-left: 3px solid rgba(16, 185, 129, 0.6); }
+.row.accent-doplatek { background: rgba(239, 68, 68, 0.12); border-left: 3px solid rgba(239, 68, 68, 0.6); }
 .row.accent-odev .val, .row.accent-pay .val, .row.accent-doplatek .val { font-weight: 700; }
