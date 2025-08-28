@@ -1,5 +1,9 @@
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Guarded history stubs
+  if (!('pushHistory' in window)) window.pushHistory = function(){};
+  if (!('renderHistory' in window)) window.renderHistory = function(){};
+
   // history neutralized
   const pushHistory = (..._args) => {};
   const renderHistory = (..._args) => {};
@@ -233,3 +237,56 @@ try {
     });
   }
 });
+
+
+// === SHARE AS IMAGE (Sdílet výčetku) ===
+(function(){
+  const btn = document.getElementById('shareImgBtn');
+  const output = document.getElementById('output') || document.querySelector('.output') || document.body;
+  if (!btn || !output || typeof html2canvas === "undefined") return;
+
+  btn.addEventListener('click', async () => {
+    try {
+      // Před snímkem dopočítej výčetku, pokud je funkce k dispozici
+      if (typeof computeAndRender === 'function') { try { computeAndRender(); } catch(_e){} }
+      const scale = Math.max(2, Math.floor(window.devicePixelRatio || 2));
+      const canvas = await html2canvas(output, { scale, backgroundColor: null, useCORS: true });
+      await new Promise((resolve, reject) => {
+        canvas.toBlob(async (blob) => {
+          try {
+            if (!blob) return reject(new Error("Nepodařilo se vytvořit PNG."));
+            const file = new File([blob], "vycetka.png", { type: "image/png" });
+
+            // 1) Nativní sdílení souboru (na https a podporovaných zařízeních)
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              await navigator.share({ files: [file], title: "Výčetka řidiče", text: "Výčetka řidiče (PNG)" });
+              return resolve();
+            }
+
+            // 2) Zkopírování obrázku do schránky (Chromium)
+            if (navigator.clipboard && window.ClipboardItem) {
+              try {
+                await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+                alert("Obrázek výčetky byl zkopírován do schránky.");
+                return resolve();
+              } catch(_e) {}
+            }
+
+            // 3) Stáhnout PNG jako fallback
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "vycetka.png";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            resolve();
+          } catch(err) { reject(err); }
+        }, "image/png");
+      });
+    } catch(e) {
+      alert("Sdílení obrázku selhalo: " + (e && e.message ? e.message : e));
+    }
+  });
+})();
