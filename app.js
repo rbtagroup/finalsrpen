@@ -162,6 +162,7 @@ try {
     if (t.startsWith('K odevzdání')) k.parentElement?.classList.add('accent-odev');
     if (t.startsWith('Výplata')) k.parentElement?.classList.add('accent-pay');
     if (t.startsWith('Doplatek řidiče na KM')) k.parentElement?.classList.add('accent-doplatek');
+    if (t.startsWith('K odevzdání celkem')) k.parentElement?.classList.add('accent-grand');
   });
 } catch(_e) {}
 
