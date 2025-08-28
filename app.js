@@ -110,9 +110,77 @@ const shareBtn = document.getElementById("shareBtn");
   }
   try { renderHistory(); } catch(_e){}
 
+  
+  // === COMPUTE & RENDER (single source of truth) ===
+  function computeAndRender(){
+    try{ syncKm(); }catch(_e){}
+    const driver = getValue("driverName");
+    const shift = getValue("shiftType");
+    const shiftLabelMap = { den: "Denní", noc: "Noční", odpo: "Odpolední", pul: "1/2 směna" };
+    const shiftLabel = shiftLabelMap[shift] || shift;
+    const kmStart = getNumber("kmStart");
+    const kmEnd = getNumber("kmEnd");
+    const kmReal = Math.max(0, kmEnd - kmStart);
+    const km = kmReal;
+    const rz = getValue("rz");
+    const trzba = getNumber("trzba");
+    const pristavne = getNumber("pristavne");
+    const palivo = getNumber("palivo");
+    const myti = getNumber("myti");
+    const kartou = getNumber("kartou");
+    const fakturou = getNumber("fakturou");
+    const jine = getNumber("jine");
+    const netto = trzba - pristavne;
+    const minTrzba = km * MIN_TRZBA_PER_KM;
+    const nedoplatek = trzba < minTrzba;
+    const doplatek = nedoplatek ? (minTrzba - trzba) : 0;
+    const isHalf = (shift === "pul");
+    const threshold = isHalf ? THRESHOLD_HALF : THRESHOLD_FULL;
+    let vyplata = (netto > threshold) ? (netto * COMMISSION_RATE) : (isHalf ? BASE_HALF_SHIFT : BASE_FULL_SHIFT);
+    vyplata = Math.round(vyplata * 100) / 100;
+    const kOdevzdani = trzba - palivo - myti - kartou - fakturou - jine;
+    const datum = new Date().toLocaleString("cs-CZ");
+    const html = `
+        <div class="title"><svg class="icon"><use href="#icon-doc"/></svg> Výčetka řidiče</div>
+        <div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-clock"/></svg></span> Datum:</div><div class="val">${datum}</div></div>
+        <div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-user"/></svg></span> Řidič:</div><div class="val">${driver}</div></div>
+        <div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-box"/></svg></span> RZ:</div><div class="val">${rz || "-"}</div></div>
+        <div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-flag"/></svg></span> Směna:</div><div class="val">${shiftLabel}</div></div>
+        <div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-flag"/></svg></span> Km začátek:</div><div class="val">${kmStart}</div></div>
+        <div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-flag"/></svg></span> Km konec:</div><div class="val">${kmEnd}</div></div>
+        <div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-road"/></svg></span> Najeté km:</div><div class="val">${km}</div></div>
+        <div class="hr"></div>
+        <div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-cash"/></svg></span> Tržba:</div><div class="val">${trzba} Kč</div></div>
+        <div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-flag"/></svg></span> Přístavné:</div><div class="val">${pristavne} Kč</div></div>
+        <div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-fuel"/></svg></span> Palivo:</div><div class="val">${palivo} Kč</div></div>
+        <div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-wash"/></svg></span> Mytí:</div><div class="val">${myti} Kč</div></div>
+        <div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-card"/></svg></span> Kartou:</div><div class="val">${kartou} Kč</div></div>
+        <div class="row"><div class="key"><span class="ico"><svg class="icon"><use href="#icon-doc"/></svg></span> Faktura:</div><div class="val">${fakturou} Kč</div></div>
+        <div class="hr"></div>
+        <div class="row"><div class="key">K odevzdání:</div><div class="val money-blue">${kOdevzdani.toFixed(2)} Kč</div></div>
+        <div class="row"><div class="key">Výplata:</div><div class="val money-green">${vyplata.toFixed(2)} Kč</div></div>
+        ${nedoplatek ? `<div class="row"><div class="key">Doplatek řidiče na KM:</div><div class="val money-red">${doplatek.toFixed(2)} Kč</div></div>` : ``}
+      `;
+    output.innerHTML = html;
+    try {
+      output.querySelectorAll('.row .key').forEach(k => {
+        const t = (k.textContent || '').trim();
+        if (t.startsWith('K odevzdání')) k.parentElement?.classList.add('accent-odev');
+        if (t.startsWith('Výplata')) k.parentElement?.classList.add('accent-pay');
+        if (t.startsWith('Doplatek řidiče na KM')) k.parentElement?.classList.add('accent-doplatek');
+      });
+    } catch(_e) {}
+    output.classList.remove("hidden");
+    actions && actions.classList.remove("hidden");
+    return {kmStart, kmEnd, km, trzba, pristavne, palivo, myti, kartou, fakturou, jine, kOdevzdani, vyplata, nedoplatek, doplatek};
+  }
+
   // === SUBMIT ===
   if (form) {
     form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      computeAndRender();
+      return;
       try{ syncKm(); }catch(_e){}
       e.preventDefault();
       const driver = getValue("driverName");
@@ -189,6 +257,7 @@ try {
   }
 
   // === BUTTONS ===
+  try { (form && form.querySelector('button[type="submit"]'))?.addEventListener("click", (ev)=>{ ev.preventDefault(); computeAndRender(); }); } catch(_e) {}
   if (resetBtn) resetBtn.addEventListener("click", () => {
     const keepName = document.getElementById("driverName")?.value || "";
     form?.reset();
