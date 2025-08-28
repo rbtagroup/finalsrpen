@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
       vyplata = Math.round(vyplata * 100) / 100;
 
       const kOdevzdani = (trzba - palivo - myti - kartou - fakturou - jine - vyplata);
-// kOdevzdani will be computed after vyplata is known
+// kOdevzdani set after vyplata
       const datum = new Date().toLocaleString("cs-CZ");
       
       const html = `
@@ -140,9 +140,8 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="hr"></div>
         <div class="row"><div class="key">K odevzdání:</div><div class="val money-blue">${kOdevzdani.toFixed(2)} Kč</div></div>
         <div class="row"><div class="key">Výplata:</div><div class="val money-green">${vyplata.toFixed(2)} Kč</div></div>
-        ${nedoplatek ? `<div class="row"><div class="key">Doplatek řidiče na KM:</div><div class="val money-red">${doplatek.toFixed(2)} Kč</div></div>
-        <div class="row"><div class="key">K odevzdání celkem (s doplatkem)</div><div class="val money-blue">${(kOdevzdani + doplatek).toFixed(2)} Kč</div></div>
-        ` : ``}
+        ${nedoplatek ? `<div class="row"><div class="key">Doplatek řidiče na KM</div><div class="val money-red">${doplatek.toFixed(2)} Kč</div></div>
+        <div class="row"><div class="key">K odevzdání celkem (s doplatkem)</div><div class="val money-blue">${(kOdevzdani + doplatek).toFixed(2)} Kč</div></div>` : ``}
       `;
 // Inject RZ + KM rows right after the title
       try {
