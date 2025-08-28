@@ -244,3 +244,85 @@ button .icon{ margin-right:8px; }
   color: #fff;
   text-shadow: 0 1px 3px rgba(0,0,0,.75);
 }
+
+
+/* === TOP-TOP Compact Adjustments === */
+.row.accent-grand {
+  border-left: 4px solid #ffd700;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(212,175,55,.4),
+              inset 0 1px 2px rgba(255,255,255,.2);
+  margin-top: 8px;
+  padding: 10px 12px;
+}
+.row.accent-grand .key {
+  font-size: 16px;
+  font-weight: 700;
+  gap: 6px;
+}
+.row.accent-grand .val {
+  font-size: 18px;
+  font-weight: 800;
+}
+.row.accent-odev,
+.row.accent-pay,
+.row.accent-doplatek {
+  padding: 6px 10px;
+  border-radius: 10px;
+}
+.row.accent-odev .val,
+.row.accent-pay .val,
+.row.accent-doplatek .val {
+  font-size: 16px;
+  font-weight: 700;
+}
+#output .row { padding: 6px 10px; margin: 6px 0; }
+#output .hr { margin: 8px 0; }
+
+
+/* === TOP-TOP COMPACT OVERRIDES === */
+#output .row { padding: 6px 10px !important; margin: 6px 0 !important; border-radius: 10px !important; }
+#output .hr { margin: 8px 0 !important; }
+
+.row.accent-odev,
+.row.accent-pay,
+.row.accent-doplatek {
+  padding: 6px 10px !important;
+  border-radius: 10px !important;
+}
+
+.row.accent-odev .val,
+.row.accent-pay .val,
+.row.accent-doplatek .val {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+
+.row.accent-grand {
+  border-left-width: 4px !important;
+  border-radius: 10px !important;
+  margin-top: 8px !important;
+  padding: 10px 12px !important;
+  box-shadow: 0 0 8px rgba(212,175,55,.4),
+              inset 0 1px 2px rgba(255,255,255,.2) !important;
+}
+
+.row.accent-grand .key {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  gap: 6px !important;
+}
+
+.row.accent-grand .val {
+  font-size: 18px !important;
+  font-weight: 800 !important;
+}
+
+/* Tighten general value text */
+#output .row .val{
+  text-align:right;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  letter-spacing: .1px;
+  font-weight: 700;
+}
