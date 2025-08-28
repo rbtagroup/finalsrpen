@@ -35,40 +35,54 @@
     </style>
 
 
-<style id="exportVisibilityStyles">
-/* Pouze pro export obrázku (.capture-export) */
-.capture-export { background: #ffffff !important; color: #111 !important; }
+<style id="exportVisibilityStrongest">
+/* Full readability during export */
+.capture-export { background:#ffffff !important; color:#111 !important; }
 .capture-export, .capture-export * {
   background-color: transparent !important;
-  color: #111111 !important;
-  -webkit-text-fill-color: #111111 !important;
-  opacity: 1 !important;
-  filter: none !important;
-  mix-blend-mode: normal !important;
-  text-shadow: none !important;
-  box-shadow: none !important;
+  color:#111111 !important;
+  -webkit-text-fill-color:#111111 !important;
+  opacity:1 !important;
+  filter:none !important;
+  mix-blend-mode:normal !important;
+  text-shadow:none !important;
+  box-shadow:none !important;
 }
-/* okraje a řádky ať jsou čitelné */
-.capture-export .row { border-color: #cfcfcf !important; }
-/* zachovat barvy tří klíčových řádků */
+/* raise specificity to beat any .row.* rules with !important */
+.capture-export .row,
+.capture-export .row *,
+.capture-export .key,
+.capture-export .val,
+.capture-export .title {
+  color:#111111 !important;
+  -webkit-text-fill-color:#111111 !important;
+  opacity:1 !important;
+  filter:none !important;
+  mix-blend-mode:normal !important;
+  text-shadow:none !important;
+  box-shadow:none !important;
+  font-weight:600 !important;
+}
+/* keep borders and structure visible */
+.capture-export .row { border-color:#cfcfcf !important; }
+/* Accent colors preserved */
+.capture-export .accent-odev, .capture-export .k-odevzdani { border-left-color:#1f7a1f !important; }
 .capture-export .accent-odev .key, .capture-export .accent-odev .val,
-.capture-export .k-odevzdani .key, .capture-export .k-odevzdani .val {
-  color: #1f7a1f !important; -webkit-text-fill-color:#1f7a1f !important; font-weight: 800 !important;
+.capture-export .k-odevzdani .key, .capture-export .k-odevzdani .val { 
+  color:#1f7a1f !important; -webkit-text-fill-color:#1f7a1f !important; font-weight:800 !important;
 }
+.capture-export .accent-pay, .capture-export .vyplata { border-left-color:#1a73e8 !important; }
 .capture-export .accent-pay .key, .capture-export .accent-pay .val,
-.capture-export .vyplata .key, .capture-export .vyplata .val {
-  color: #1a73e8 !important; -webkit-text-fill-color:#1a73e8 !important; font-weight: 800 !important;
+.capture-export .vyplata .key, .capture-export .vyplata .val { 
+  color:#1a73e8 !important; -webkit-text-fill-color:#1a73e8 !important; font-weight:800 !important;
 }
+.capture-export .accent-doplatek, .capture-export .doplatek, .capture-export .doplatek-km, .capture-export .doplatek-na-km { border-left-color:#d93025 !important; }
 .capture-export .accent-doplatek .key, .capture-export .accent-doplatek .val,
 .capture-export .doplatek .key, .capture-export .doplatek .val,
 .capture-export .doplatek-km .key, .capture-export .doplatek-km .val,
-.capture-export .doplatek-na-km .key, .capture-export .doplatek-na-km .val {
-  color: #d93025 !important; -webkit-text-fill-color:#d93025 !important; font-weight: 800 !important;
+.capture-export .doplatek-na-km .key, .capture-export .doplatek-na-km .val { 
+  color:#d93025 !important; -webkit-text-fill-color:#d93025 !important; font-weight:800 !important;
 }
-/* levý barevný pruh (pokud existuje) */
-.capture-export .accent-odev, .capture-export .k-odevzdani { border-left-color:#1f7a1f !important; }
-.capture-export .accent-pay, .capture-export .vyplata { border-left-color:#1a73e8 !important; }
-.capture-export .accent-doplatek, .capture-export .doplatek, .capture-export .doplatek-km, .capture-export .doplatek-na-km { border-left-color:#d93025 !important; }
 </style>
 
 </head>
