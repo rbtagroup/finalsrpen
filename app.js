@@ -1,9 +1,5 @@
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Guarded history stubs
-  if (!('pushHistory' in window)) window.pushHistory = function(){};
-  if (!('renderHistory' in window)) window.renderHistory = function(){};
-
   // history neutralized
   const pushHistory = (..._args) => {};
   const renderHistory = (..._args) => {};
@@ -23,7 +19,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const historyList = document.getElementById("historyList") || (historyBox && historyBox.querySelector("#historyList"));
 
   const resetBtn = document.getElementById("resetBtn");
-
+  const pdfBtn = document.getElementById("pdfExport");
+  const shareBtn = document.getElementById("shareBtn");
   const newShiftBtn = document.getElementById("newShiftBtn");
   const themeToggle = document.getElementById("themeToggle");
 
@@ -177,6 +174,60 @@ try {
   }
 
   // === BUTTONS ===
+
+// === SHARE AS IMAGE (non-blocking) ===
+(function(){
+  const btn = document.getElementById('shareImgBtn');
+  const output = document.getElementById('output') || document.querySelector('.output') || document.body;
+  if (!btn || !output) return;
+  btn.addEventListener('click', async () => {
+    try {
+      // ensure visible and up to date before capture
+      if (typeof computeAndRender === 'function') { try { computeAndRender(); } catch(_e){} }
+      const scale = Math.max(2, Math.floor(window.devicePixelRatio || 2));
+      const canvas = await html2canvas(output, { scale, backgroundColor: null, useCORS: true });
+      await new Promise((resolve, reject) => {
+        canvas.toBlob(async (blob) => {
+          try {
+            if (!blob) return reject(new Error("Nepodařilo se vytvořit obrázek."));
+            const file = new File([blob], "vypocet-vycetky.png", { type: "image/png" });
+
+            // 1) Native share with file (https / supported UA)
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              await navigator.share({ files: [file], title: "Výčetka řidiče", text: "Výčetka řidiče (PNG)" });
+              return resolve();
+            }
+
+            // 2) Clipboard as image (some Chromium builds)
+            if (navigator.clipboard && window.ClipboardItem) {
+              try {
+                await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+                alert("Obrázek výčetky byl zkopírován do schránky.");
+                return resolve();
+              } catch(_e) {}
+            }
+
+            // 3) Download fallback
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "vypocet-vycetky.png";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            resolve();
+          } catch(err) {
+            reject(err);
+          }
+        }, "image/png");
+      });
+    } catch (e) {
+      alert("Sdílení obrázku selhalo: " + (e && e.message ? e.message : e));
+    }
+  });
+})();
+
   if (resetBtn) resetBtn.addEventListener("click", () => {
     const keepName = document.getElementById("driverName")?.value || "";
     form?.reset();
@@ -194,7 +245,8 @@ try {
     output?.classList.add("hidden");
     actions?.classList.add("hidden");
   });
-=> {
+
+  if (shareBtn) shareBtn.addEventListener("click", async () => {
     try {
       const text = (output && !output.classList.contains("hidden")) ? output.innerText.trim() : "";
       if (!text) { alert("Nejprve vypočítejte výčetku."); return; }
@@ -213,7 +265,8 @@ try {
       alert("Sdílení selhalo: " + (e && e.message ? e.message : e));
     }
   });
-=> {
+
+  if (pdfBtn) pdfBtn.addEventListener("click", () => {
     const node = output;
     if (!node || node.classList.contains("hidden")) { alert("Nejprve vypočítejte výčetku."); return; }
     html2canvas(node, { scale: 2, useCORS: true }).then(canvas => {
@@ -237,56 +290,3 @@ try {
     });
   }
 });
-
-
-// === SHARE AS IMAGE (Sdílet výčetku) ===
-(function(){
-  const btn = document.getElementById('shareImgBtn');
-  const output = document.getElementById('output') || document.querySelector('.output') || document.body;
-  if (!btn || !output || typeof html2canvas === "undefined") return;
-
-  btn.addEventListener('click', async () => {
-    try {
-      // Před snímkem dopočítej výčetku, pokud je funkce k dispozici
-      if (typeof computeAndRender === 'function') { try { computeAndRender(); } catch(_e){} }
-      const scale = Math.max(2, Math.floor(window.devicePixelRatio || 2));
-      const canvas = await html2canvas(output, { scale, backgroundColor: null, useCORS: true });
-      await new Promise((resolve, reject) => {
-        canvas.toBlob(async (blob) => {
-          try {
-            if (!blob) return reject(new Error("Nepodařilo se vytvořit PNG."));
-            const file = new File([blob], "vycetka.png", { type: "image/png" });
-
-            // 1) Nativní sdílení souboru (na https a podporovaných zařízeních)
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-              await navigator.share({ files: [file], title: "Výčetka řidiče", text: "Výčetka řidiče (PNG)" });
-              return resolve();
-            }
-
-            // 2) Zkopírování obrázku do schránky (Chromium)
-            if (navigator.clipboard && window.ClipboardItem) {
-              try {
-                await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-                alert("Obrázek výčetky byl zkopírován do schránky.");
-                return resolve();
-              } catch(_e) {}
-            }
-
-            // 3) Stáhnout PNG jako fallback
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "vycetka.png";
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
-            resolve();
-          } catch(err) { reject(err); }
-        }, "image/png");
-      });
-    } catch(e) {
-      alert("Sdílení obrázku selhalo: " + (e && e.message ? e.message : e));
-    }
-  });
-})();
