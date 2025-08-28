@@ -85,7 +85,28 @@
           <option value="pul">1/2 směna</option>
         </select>
       </label>
-      <label><span class="ico"><svg class="icon"><use href="#icon-road"/></svg></span> Kilometry: <input type="number" id="km" required /></label>
+      <label><span class="ico"><svg class="icon"><use href="#icon-car"/></svg></span> RZ vozidla:
+        <select id="rz">
+          <option value="">— vyberte RZ —</option>
+          <option>1BS2008</option>
+          <option>1BT9883</option>
+          <option>1BU0299</option>
+          <option>1BU0060</option>
+          <option>2BT6881</option>
+          <option>2BY5398</option>
+          <option>2BL8995</option>
+          <option>3BD6003</option>
+        </select>
+      </label>
+      <label><span class="ico"><svg class="icon"><use href="#icon-flag"/></svg></span> Počáteční km:
+        <input type="number" id="kmStart" inputmode="numeric" />
+      </label>
+      <label><span class="ico"><svg class="icon"><use href="#icon-flag"/></svg></span> Konečné km:
+        <input type="number" id="kmEnd" inputmode="numeric" />
+      </label>
+      <label><span class="ico"><svg class="icon"><use href="#icon-road"/></svg></span> Najeté km (auto):
+        <input type="number" id="kmReal" readonly />
+      </label>
       <label><span class="ico"><svg class="icon"><use href="#icon-cash"/></svg></span> Tržba: <input type="number" id="trzba" required /></label>
       <label><span class="ico"><svg class="icon"><use href="#icon-flag"/></svg></span> Přístavné: <input type="number" id="pristavne" /></label>
       <label><span class="ico"><svg class="icon"><use href="#icon-fuel"/></svg></span> Palivo: <input type="number" id="palivo" /></label>
@@ -109,7 +130,6 @@
     
       <button type="button" id="imgExport"><svg class="icon"><use href="#icon-doc"/></svg> Export jako PNG</button>
     </div>
-    <section id="history" class="hidden"><h3 style="margin:8px 0 4px;">📚 Historie (posledních 10)</h3><div id="historyList"></div></section>
   
     <footer id="appVersion" style="text-align:center;color:#9aa0a6;margin:10px 0;font-size:12px;">RB TAXI Mobile v9_ultra_20250820192037</footer>
 </main>
