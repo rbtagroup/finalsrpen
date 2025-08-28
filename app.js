@@ -14,8 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("calcForm");
   const output = document.getElementById("output");
   const actions = document.getElementById("actions");
-  const historyBox = document.getElementById("history") /* may be null */;
-  const historyList = document.getElementById("historyList") /* may be null */ || (historyBox && historyBox.querySelector("#historyList"));
+  const historyBox = document.getElementById("history");
+  const historyList = document.getElementById("historyList") || (historyBox && historyBox.querySelector("#historyList"));
 
   const resetBtn = document.getElementById("resetBtn");
 const shareBtn = document.getElementById("shareBtn");
@@ -27,7 +27,7 @@ const shareBtn = document.getElementById("shareBtn");
   const kmStartEl = document.getElementById("kmStart");
   const kmEndEl = document.getElementById("kmEnd");
   const kmRealEl = document.getElementById("kmReal");
-  const kmEl = null; // legacy km removed/* may be null */;
+  const kmEl = document.getElementById("km");
   const rzEl = document.getElementById("rz");
   function syncKm() {
     const s = parseFloat((kmStartEl?.value || "0").replace(",", ".")) || 0;
@@ -162,6 +162,8 @@ const shareBtn = document.getElementById("shareBtn");
         ${nedoplatek ? `<div class="row"><div class="key">Doplatek řidiče na KM:</div><div class="val money-red">${doplatek.toFixed(2)} Kč</div></div>` : ``}
       `;
     output.innerHTML = html;
+      output && output.classList.remove('hidden');
+      actions && actions.classList.remove('hidden');
     try {
       output.querySelectorAll('.row .key').forEach(k => {
         const t = (k.textContent || '').trim();
@@ -237,6 +239,8 @@ const shareBtn = document.getElementById("shareBtn");
         ${nedoplatek ? `<div class="row"><div class="key">Doplatek řidiče na KM:</div><div class="val money-red">${doplatek.toFixed(2)} Kč</div></div>` : ``}
       `;
 output.innerHTML = html;
+      output && output.classList.remove('hidden');
+      actions && actions.classList.remove('hidden');
 try {
   output.querySelectorAll('.row .key').forEach(k => {
     const t = (k.textContent || '').trim();
@@ -257,6 +261,13 @@ try {
   }
 
   // === BUTTONS ===
+
+  // === EXTRA: make sure clicking the submit button always computes ===
+  try {
+    const submitBtn = (form && form.querySelector('button[type="submit"]')) || document.getElementById('calcBtn');
+    submitBtn && submitBtn.addEventListener('click', (ev) => { ev.preventDefault(); try{ syncKm(); }catch(_e){} computeAndRender(); });
+  } catch(_e) {}
+
   try { (form && form.querySelector('button[type="submit"]'))?.addEventListener("click", (ev)=>{ ev.preventDefault(); computeAndRender(); }); } catch(_e) {}
   if (resetBtn) resetBtn.addEventListener("click", () => {
     const keepName = document.getElementById("driverName")?.value || "";
@@ -270,7 +281,7 @@ try {
     const keepName = document.getElementById("driverName")?.value || "";
     form?.reset();
     if (keepName) document.getElementById("driverName").value = keepName;
-    const note = document.getElementById("note") /* may be null */;
+    const note = document.getElementById("note");
     if (note) note.value = "";
     output?.classList.add("hidden");
     actions?.classList.add("hidden");
@@ -295,7 +306,8 @@ try {
       alert("Sdílení selhalo: " + (e && e.message ? e.message : e));
     }
   });
-=> {
+
+  if (pdfBtn) pdfBtn.addEventListener("click", () => {
     const node = output;
     if (!node || node.classList.contains("hidden")) { alert("Nejprve vypočítejte výčetku."); return; }
     html2canvas(node, { scale: 2, useCORS: true }).then(canvas => {
