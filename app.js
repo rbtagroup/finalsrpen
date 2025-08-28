@@ -36,7 +36,9 @@ const shareBtn = document.getElementById("shareBtn");
     if (kmRealEl) kmRealEl.value = real;
   }
   kmStartEl && kmStartEl.addEventListener("input", syncKm);
+  kmStartEl && kmStartEl.addEventListener("change", syncKm);
   kmEndEl && kmEndEl.addEventListener("input", syncKm);
+  kmEndEl && kmEndEl.addEventListener("change", syncKm);
 // === HELPERS ===
   function getValue(id) {
     const el = document.getElementById(id);
@@ -111,6 +113,7 @@ const shareBtn = document.getElementById("shareBtn");
   // === SUBMIT ===
   if (form) {
     form.addEventListener("submit", (e) => {
+      try{ syncKm(); }catch(_e){}
       e.preventDefault();
       const driver = getValue("driverName");
       const shift = getValue("shiftType");
