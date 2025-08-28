@@ -15,189 +15,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script defer src="app.js?v=v13_hardfix_20250821103429?v=v10_ultra_fix_20250820194050?v=v9_ultra_20250820192037"></script>
-
-    <style id="captureStyles">
-      /* capture-export styles */
-      .capture-export, .capture-export * {
-        color: #111 !important;
-        background: #ffffff !important;
-        box-shadow: none !important;
-        text-shadow: none !important;
-        -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-      }
-      .capture-export .accent-odev .val,
-      .capture-export .accent-pay .val,
-      .capture-export .accent-doplatek .val {
-        font-weight: 700;
-      }
-      .capture-export .row { border-color: #ccc !important; }
-    </style>
-
-
-<style id="receiptThemeSynced">
-/* LIGHT as default tokens (align to app scale) */
-#output.receipt-card {
-  /* inherit app's font stack & size */
-  font-family: inherit;
-  font-size: 1rem; /* 16px base to match app */
-  --card-bg: #ffffff;
-  --card-fg: #1b1f23;
-  --muted:   #6b7280;
-  --divider: #e5e7eb;
-
-  --gold-1: #f5d36a;
-  --gold-2: #e0b956;
-
-  /* accent palettes for light */
-  --band-green:  #166534;
-  --band-green-bg0: #e8f5ed;
-  --band-green-bg1: #def0e6;
-  --band-blue:   #1d4ed8;
-  --band-blue-bg0:  #e8efff;
-  --band-blue-bg1:  #dee7ff;
-  --band-red:    #b91c1c;
-  --band-red-bg0:   #ffe8e8;
-  --band-red-bg1:   #ffdbdb;
-}
-
-/* DARK overrides (supports data-theme="dark" or .dark or prefers-color-scheme) */
-[data-theme="dark"] #output.receipt-card,
-.dark #output.receipt-card {
-  --card-bg: #141517;
-  --card-fg: #e5e7eb;
-  --muted:   #a0a6ae;
-  --divider: #2a2e33;
-
-  --band-green:  #34a853;
-  --band-green-bg0: #1a332a;
-  --band-green-bg1: #10241c;
-  --band-blue:   #1a73e8;
-  --band-blue-bg0:  #172646;
-  --band-blue-bg1:  #0f1c38;
-  --band-red:    #d93025;
-  --band-red-bg0:   #3a1f1f;
-  --band-red-bg1:   #281212;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) #output.receipt-card {
-    --card-bg: #141517;
-    --card-fg: #e5e7eb;
-    --muted:   #a0a6ae;
-    --divider: #2a2e33;
-
-    --band-green:  #34a853;
-    --band-green-bg0: #1a332a;
-    --band-green-bg1: #10241c;
-    --band-blue:   #1a73e8;
-    --band-blue-bg0:  #172646;
-    --band-blue-bg1:  #0f1c38;
-    --band-red:    #d93025;
-    --band-red-bg0:   #3a1f1f;
-    --band-red-bg1:   #281212;
-  }
-}
-
-/* Card container */
-#output.receipt-card {
-  border-radius: 16px;
-  border: 1px solid var(--divider);
-  padding: 16px 18px 12px;
-  background: var(--card-bg);
-  color: var(--card-fg);
-  box-shadow:
-    0 1px 3px rgba(0,0,0,.08),
-    0 4px 12px rgba(0,0,0,.06);
-  position: relative;
-  isolation: isolate;
-}
-
-/* Gold strip */
-#output.receipt-card::before{
-  content:"";
-  display:block;
-  height: 22px;
-  margin: -4px 0 12px;
-  border-radius: 10px;
-  background: linear-gradient(90deg,var(--gold-1) 0%, var(--gold-2) 100%);
-}
-
-/* Typography – synced with app scale */
-#output.receipt-card .title{
-  font-size: 1.25rem; /* 20px */
-  font-weight: 800;
-  margin: 0 0 8px;
-}
-#output.receipt-card .row{
-  display:flex; align-items:baseline; justify-content:space-between; gap:12px;
-  padding: 6px 0;
-  border-bottom: 1px solid transparent;
-}
-#output.receipt-card .row.keyval{ border-bottom-color: var(--divider); }
-
-#output.receipt-card .key{
-  font-size: 1rem;   /* 16px */
-  font-weight: 700;
-  color: var(--card-fg);
-}
-#output.receipt-card .val{
-  font-size: 1rem;   /* 16px */
-  font-weight: 600;
-  color: var(--card-fg);
-}
-#output.receipt-card .muted .key,
-#output.receipt-card .muted .val{ color: var(--muted); }
-
-/* totals */
-#output.receipt-card .totals{ margin-top: 10px; }
-#output.receipt-card .totals .val{ font-weight: 700; font-size: 1.0625rem; } /* 17px */
-
-/* Accent bands (light & dark via variables) */
-#output.receipt-card .row.accent-odev{
-  background: linear-gradient(0deg,var(--band-green-bg0) 0%, var(--band-green-bg1) 100%);
-  border-left: 6px solid var(--band-green);
-  border-radius: 6px;
-  padding: 8px 10px;
-  margin: 8px 0;
-}
-#output.receipt-card .row.accent-pay{
-  background: linear-gradient(0deg,var(--band-blue-bg0) 0%, var(--band-blue-bg1) 100%);
-  border-left: 6px solid var(--band-blue);
-  border-radius: 6px;
-  padding: 8px 10px;
-  margin: 8px 0;
-}
-#output.receipt-card .row.accent-doplatek{
-  background: linear-gradient(0deg,var(--band-red-bg0) 0%, var(--band-red-bg1) 100%);
-  border-left: 6px solid var(--band-red);
-  border-radius: 6px;
-  padding: 8px 10px;
-  margin: 8px 0;
-}
-
-/* Ensure full contrast (no faded text) */
-#output.receipt-card, #output.receipt-card *{
-  -webkit-text-fill-color: currentColor;
-  opacity: 1;
-  mix-blend-mode: normal;
-  text-shadow: none;
-}
-
-/* Export snapshot equals on-screen theme */
-.capture-export#output.receipt-card{
-  background: var(--card-bg) !important;
-  color: var(--card-fg) !important;
-}
-.capture-export#output.receipt-card, .capture-export#output.receipt-card *{
-  -webkit-text-fill-color: currentColor !important;
-  opacity: 1 !important;
-  filter: none !important;
-  mix-blend-mode: normal !important;
-  text-shadow: none !important;
-  box-shadow: none !important;
-}
-</style>
-
 </head>
 <body>
 
@@ -271,11 +88,10 @@
       <label><span class="ico"><svg class="icon"><use href="#icon-car"/></svg></span> RZ vozidla:
         <select id="rz">
           <option value="">— vyberte RZ —</option>
-          <option>1BS2008</option>
-          <option>1BT9883</option>
           <option>1BU0299</option>
           <option>1BU0060</option>
           <option>2BT6881</option>
+          <option>2BT1565</option>
           <option>2BY5398</option>
           <option>2BL8995</option>
           <option>3BD6003</option>
@@ -307,80 +123,13 @@
 
     <section id="output" class="hidden"></section>
     <div id="actions" class="hidden">
+      <button type="button" id="pdfExport"><svg class="icon"><use href="#icon-doc"/></svg> Export do PDF</button>
+      <button type="button" id="shareBtn"><svg class="icon"><use href="#icon-share"/></svg> Sdílet</button>
       <button type="button" id="newShiftBtn"><svg class="icon"><use href="#icon-repeat"/></svg> Nová směna</button>
     
-        <button type="button" id="shareImgBtn" title="Sdílet výčetku jako obrázek">Sdílet výčetku</button></div>
+        <button type="button" id="shareImgBtn" title="Sdílet výčetku jako obrázek">Sdílet jako obrázek</button></div>
   
     <footer id="appVersion" style="text-align:center;color:#9aa0a6;margin:10px 0;font-size:12px;">RB TAXI Mobile v9_ultra_20250820192037</footer>
 </main>
-
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  try {
-    var btn = document.getElementById('shareImgBtn');
-    if (!btn) return;
-    var clone = btn.cloneNode(true);
-    btn.parentNode.replaceChild(clone, btn);
-    btn = clone;
-
-    btn.addEventListener('click', function(ev){
-      ev.preventDefault(); ev.stopImmediatePropagation();
-      try { if (typeof computeAndRender === 'function') computeAndRender(); } catch(_){}
-
-      var output = document.getElementById('output') || document.querySelector('.output') || document.body;
-      if (!output || typeof html2canvas === 'undefined') return;
-
-      var root = document.documentElement;
-      var prevTheme = root.getAttribute('data-theme');
-      root.setAttribute('data-theme', 'light');
-      output.classList.add('capture-export');
-
-      var scale = Math.max(2, Math.floor(window.devicePixelRatio || 2)) + 1;
-      html2canvas(output, { scale: scale, backgroundColor: '#ffffff', useCORS: true })
-        .then(function(canvas){
-          return new Promise(function(resolve, reject){
-            canvas.toBlob(function(blob){
-              if (!blob) return reject(new Error('PNG se nepodařilo vytvořit.'));
-              var file = new File([blob], 'vycetka.png', { type: 'image/png' });
-
-              if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                navigator.share({ files: [file], title: 'Výčetka řidiče', text: 'Výčetka řidiče (PNG)' }).then(resolve).catch(reject);
-              } else if (navigator.clipboard && window.ClipboardItem) {
-                navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
-                  .then(function(){ alert('Obrázek výčetky byl zkopírován do schránky.'); resolve(); })
-                  .catch(function(){
-                    var url = URL.createObjectURL(blob);
-                    var a = document.createElement('a'); a.href = url; a.download = 'vycetka.png';
-                    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-                    resolve();
-                  });
-              } else {
-                var url = URL.createObjectURL(blob);
-                var a = document.createElement('a'); a.href = url; a.download = 'vycetka.png';
-                document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-                resolve();
-              }
-            }, 'image/png');
-          });
-        })
-        .catch(function(e){ alert('Sdílení obrázku selhalo: ' + (e && e.message ? e.message : e)); })
-        .finally(function(){
-          output.classList.remove('capture-export');
-          if (prevTheme !== null) root.setAttribute('data-theme', prevTheme);
-          else root.removeAttribute('data-theme');
-        });
-    }, true);
-  } catch(e) {}
-});
-</script>
-
-
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  var out = document.getElementById('output');
-  if (out && !out.classList.contains('receipt-card')) out.classList.add('receipt-card');
-});
-</script>
-
 </body>
 </html>
