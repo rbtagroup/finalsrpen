@@ -35,53 +35,166 @@
     </style>
 
 
-<style id="exportVisibilityStrongest">
-/* Full readability during export */
-.capture-export { background:#ffffff !important; color:#111 !important; }
-.capture-export, .capture-export * {
-  background-color: transparent !important;
-  color:#111111 !important;
-  -webkit-text-fill-color:#111111 !important;
-  opacity:1 !important;
-  filter:none !important;
-  mix-blend-mode:normal !important;
-  text-shadow:none !important;
-  box-shadow:none !important;
+<style id="receiptThemeSynced">
+/* LIGHT as default tokens (align to app scale) */
+#output.receipt-card {
+  /* inherit app's font stack & size */
+  font-family: inherit;
+  font-size: 1rem; /* 16px base to match app */
+  --card-bg: #ffffff;
+  --card-fg: #1b1f23;
+  --muted:   #6b7280;
+  --divider: #e5e7eb;
+
+  --gold-1: #f5d36a;
+  --gold-2: #e0b956;
+
+  /* accent palettes for light */
+  --band-green:  #166534;
+  --band-green-bg0: #e8f5ed;
+  --band-green-bg1: #def0e6;
+  --band-blue:   #1d4ed8;
+  --band-blue-bg0:  #e8efff;
+  --band-blue-bg1:  #dee7ff;
+  --band-red:    #b91c1c;
+  --band-red-bg0:   #ffe8e8;
+  --band-red-bg1:   #ffdbdb;
 }
-/* raise specificity to beat any .row.* rules with !important */
-.capture-export .row,
-.capture-export .row *,
-.capture-export .key,
-.capture-export .val,
-.capture-export .title {
-  color:#111111 !important;
-  -webkit-text-fill-color:#111111 !important;
-  opacity:1 !important;
-  filter:none !important;
-  mix-blend-mode:normal !important;
-  text-shadow:none !important;
-  box-shadow:none !important;
-  font-weight:600 !important;
+
+/* DARK overrides (supports data-theme="dark" or .dark or prefers-color-scheme) */
+[data-theme="dark"] #output.receipt-card,
+.dark #output.receipt-card {
+  --card-bg: #141517;
+  --card-fg: #e5e7eb;
+  --muted:   #a0a6ae;
+  --divider: #2a2e33;
+
+  --band-green:  #34a853;
+  --band-green-bg0: #1a332a;
+  --band-green-bg1: #10241c;
+  --band-blue:   #1a73e8;
+  --band-blue-bg0:  #172646;
+  --band-blue-bg1:  #0f1c38;
+  --band-red:    #d93025;
+  --band-red-bg0:   #3a1f1f;
+  --band-red-bg1:   #281212;
 }
-/* keep borders and structure visible */
-.capture-export .row { border-color:#cfcfcf !important; }
-/* Accent colors preserved */
-.capture-export .accent-odev, .capture-export .k-odevzdani { border-left-color:#1f7a1f !important; }
-.capture-export .accent-odev .key, .capture-export .accent-odev .val,
-.capture-export .k-odevzdani .key, .capture-export .k-odevzdani .val { 
-  color:#1f7a1f !important; -webkit-text-fill-color:#1f7a1f !important; font-weight:800 !important;
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) #output.receipt-card {
+    --card-bg: #141517;
+    --card-fg: #e5e7eb;
+    --muted:   #a0a6ae;
+    --divider: #2a2e33;
+
+    --band-green:  #34a853;
+    --band-green-bg0: #1a332a;
+    --band-green-bg1: #10241c;
+    --band-blue:   #1a73e8;
+    --band-blue-bg0:  #172646;
+    --band-blue-bg1:  #0f1c38;
+    --band-red:    #d93025;
+    --band-red-bg0:   #3a1f1f;
+    --band-red-bg1:   #281212;
+  }
 }
-.capture-export .accent-pay, .capture-export .vyplata { border-left-color:#1a73e8 !important; }
-.capture-export .accent-pay .key, .capture-export .accent-pay .val,
-.capture-export .vyplata .key, .capture-export .vyplata .val { 
-  color:#1a73e8 !important; -webkit-text-fill-color:#1a73e8 !important; font-weight:800 !important;
+
+/* Card container */
+#output.receipt-card {
+  border-radius: 16px;
+  border: 1px solid var(--divider);
+  padding: 16px 18px 12px;
+  background: var(--card-bg);
+  color: var(--card-fg);
+  box-shadow:
+    0 1px 3px rgba(0,0,0,.08),
+    0 4px 12px rgba(0,0,0,.06);
+  position: relative;
+  isolation: isolate;
 }
-.capture-export .accent-doplatek, .capture-export .doplatek, .capture-export .doplatek-km, .capture-export .doplatek-na-km { border-left-color:#d93025 !important; }
-.capture-export .accent-doplatek .key, .capture-export .accent-doplatek .val,
-.capture-export .doplatek .key, .capture-export .doplatek .val,
-.capture-export .doplatek-km .key, .capture-export .doplatek-km .val,
-.capture-export .doplatek-na-km .key, .capture-export .doplatek-na-km .val { 
-  color:#d93025 !important; -webkit-text-fill-color:#d93025 !important; font-weight:800 !important;
+
+/* Gold strip */
+#output.receipt-card::before{
+  content:"";
+  display:block;
+  height: 22px;
+  margin: -4px 0 12px;
+  border-radius: 10px;
+  background: linear-gradient(90deg,var(--gold-1) 0%, var(--gold-2) 100%);
+}
+
+/* Typography – synced with app scale */
+#output.receipt-card .title{
+  font-size: 1.25rem; /* 20px */
+  font-weight: 800;
+  margin: 0 0 8px;
+}
+#output.receipt-card .row{
+  display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+  padding: 6px 0;
+  border-bottom: 1px solid transparent;
+}
+#output.receipt-card .row.keyval{ border-bottom-color: var(--divider); }
+
+#output.receipt-card .key{
+  font-size: 1rem;   /* 16px */
+  font-weight: 700;
+  color: var(--card-fg);
+}
+#output.receipt-card .val{
+  font-size: 1rem;   /* 16px */
+  font-weight: 600;
+  color: var(--card-fg);
+}
+#output.receipt-card .muted .key,
+#output.receipt-card .muted .val{ color: var(--muted); }
+
+/* totals */
+#output.receipt-card .totals{ margin-top: 10px; }
+#output.receipt-card .totals .val{ font-weight: 700; font-size: 1.0625rem; } /* 17px */
+
+/* Accent bands (light & dark via variables) */
+#output.receipt-card .row.accent-odev{
+  background: linear-gradient(0deg,var(--band-green-bg0) 0%, var(--band-green-bg1) 100%);
+  border-left: 6px solid var(--band-green);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 8px 0;
+}
+#output.receipt-card .row.accent-pay{
+  background: linear-gradient(0deg,var(--band-blue-bg0) 0%, var(--band-blue-bg1) 100%);
+  border-left: 6px solid var(--band-blue);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 8px 0;
+}
+#output.receipt-card .row.accent-doplatek{
+  background: linear-gradient(0deg,var(--band-red-bg0) 0%, var(--band-red-bg1) 100%);
+  border-left: 6px solid var(--band-red);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 8px 0;
+}
+
+/* Ensure full contrast (no faded text) */
+#output.receipt-card, #output.receipt-card *{
+  -webkit-text-fill-color: currentColor;
+  opacity: 1;
+  mix-blend-mode: normal;
+  text-shadow: none;
+}
+
+/* Export snapshot equals on-screen theme */
+.capture-export#output.receipt-card{
+  background: var(--card-bg) !important;
+  color: var(--card-fg) !important;
+}
+.capture-export#output.receipt-card, .capture-export#output.receipt-card *{
+  -webkit-text-fill-color: currentColor !important;
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
 }
 </style>
 
@@ -258,6 +371,14 @@ document.addEventListener('DOMContentLoaded', function(){
         });
     }, true);
   } catch(e) {}
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var out = document.getElementById('output');
+  if (out && !out.classList.contains('receipt-card')) out.classList.add('receipt-card');
 });
 </script>
 
