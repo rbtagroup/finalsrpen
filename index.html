@@ -16,44 +16,59 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script defer src="app.js?v=v13_hardfix_20250821103429?v=v10_ultra_fix_20250820194050?v=v9_ultra_20250820192037"></script>
 
-<style id="captureExportAccentColors">
-  /* Accent colors kept for export */
-  .capture-export .accent-odev, .capture-export .k-odevzdani { 
-    border-left-color: #1f7a1f !important;
-  }
-  .capture-export .accent-odev .key, 
-  .capture-export .accent-odev .val,
-  .capture-export .k-odevzdani .key,
-  .capture-export .k-odevzdani .val {
-    color: #1f7a1f !important;
-    -webkit-text-fill-color: #1f7a1f !important;
-    font-weight: 800 !important;
-  }
+    <style id="captureStyles">
+      /* capture-export styles */
+      .capture-export, .capture-export * {
+        color: #111 !important;
+        background: #ffffff !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+        -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+      }
+      .capture-export .accent-odev .val,
+      .capture-export .accent-pay .val,
+      .capture-export .accent-doplatek .val {
+        font-weight: 700;
+      }
+      .capture-export .row { border-color: #ccc !important; }
+    </style>
 
-  .capture-export .accent-pay, .capture-export .vyplata {
-    border-left-color: #1a73e8 !important;
-  }
-  .capture-export .accent-pay .key, 
-  .capture-export .accent-pay .val,
-  .capture-export .vyplata .key,
-  .capture-export .vyplata .val {
-    color: #1a73e8 !important;
-    -webkit-text-fill-color: #1a73e8 !important;
-    font-weight: 800 !important;
-  }
 
-  .capture-export .accent-doplatek, .capture-export .doplatek, .capture-export .doplatek-km, .capture-export .doplatek-na-km {
-    border-left-color: #d93025 !important;
-  }
-  .capture-export .accent-doplatek .key, 
-  .capture-export .accent-doplatek .val,
-  .capture-export .doplatek .key, .capture-export .doplatek .val,
-  .capture-export .doplatek-km .key, .capture-export .doplatek-km .val,
-  .capture-export .doplatek-na-km .key, .capture-export .doplatek-na-km .val {
-    color: #d93025 !important;
-    -webkit-text-fill-color: #d93025 !important;
-    font-weight: 800 !important;
-  }
+<style id="exportVisibilityStyles">
+/* Pouze pro export obrázku (.capture-export) */
+.capture-export { background: #ffffff !important; color: #111 !important; }
+.capture-export, .capture-export * {
+  background-color: transparent !important;
+  color: #111111 !important;
+  -webkit-text-fill-color: #111111 !important;
+  opacity: 1 !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+/* okraje a řádky ať jsou čitelné */
+.capture-export .row { border-color: #cfcfcf !important; }
+/* zachovat barvy tří klíčových řádků */
+.capture-export .accent-odev .key, .capture-export .accent-odev .val,
+.capture-export .k-odevzdani .key, .capture-export .k-odevzdani .val {
+  color: #1f7a1f !important; -webkit-text-fill-color:#1f7a1f !important; font-weight: 800 !important;
+}
+.capture-export .accent-pay .key, .capture-export .accent-pay .val,
+.capture-export .vyplata .key, .capture-export .vyplata .val {
+  color: #1a73e8 !important; -webkit-text-fill-color:#1a73e8 !important; font-weight: 800 !important;
+}
+.capture-export .accent-doplatek .key, .capture-export .accent-doplatek .val,
+.capture-export .doplatek .key, .capture-export .doplatek .val,
+.capture-export .doplatek-km .key, .capture-export .doplatek-km .val,
+.capture-export .doplatek-na-km .key, .capture-export .doplatek-na-km .val {
+  color: #d93025 !important; -webkit-text-fill-color:#d93025 !important; font-weight: 800 !important;
+}
+/* levý barevný pruh (pokud existuje) */
+.capture-export .accent-odev, .capture-export .k-odevzdani { border-left-color:#1f7a1f !important; }
+.capture-export .accent-pay, .capture-export .vyplata { border-left-color:#1a73e8 !important; }
+.capture-export .accent-doplatek, .capture-export .doplatek, .capture-export .doplatek-km, .capture-export .doplatek-na-km { border-left-color:#d93025 !important; }
 </style>
 
 </head>
@@ -165,13 +180,72 @@
 
     <section id="output" class="hidden"></section>
     <div id="actions" class="hidden">
-      <button type="button" id="pdfExport"><svg class="icon"><use href="#icon-doc"/></svg> Export do PDF</button>
-      <button type="button" id="shareBtn"><svg class="icon"><use href="#icon-share"/></svg> Sdílet</button>
       <button type="button" id="newShiftBtn"><svg class="icon"><use href="#icon-repeat"/></svg> Nová směna</button>
     
-        <button type="button" id="shareImgBtn" title="Sdílet výčetku jako obrázek">Sdílet jako obrázek</button></div>
+        <button type="button" id="shareImgBtn" title="Sdílet výčetku jako obrázek">Sdílet výčetku</button></div>
   
     <footer id="appVersion" style="text-align:center;color:#9aa0a6;margin:10px 0;font-size:12px;">RB TAXI Mobile v9_ultra_20250820192037</footer>
 </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  try {
+    var btn = document.getElementById('shareImgBtn');
+    if (!btn) return;
+    var clone = btn.cloneNode(true);
+    btn.parentNode.replaceChild(clone, btn);
+    btn = clone;
+
+    btn.addEventListener('click', function(ev){
+      ev.preventDefault(); ev.stopImmediatePropagation();
+      try { if (typeof computeAndRender === 'function') computeAndRender(); } catch(_){}
+
+      var output = document.getElementById('output') || document.querySelector('.output') || document.body;
+      if (!output || typeof html2canvas === 'undefined') return;
+
+      var root = document.documentElement;
+      var prevTheme = root.getAttribute('data-theme');
+      root.setAttribute('data-theme', 'light');
+      output.classList.add('capture-export');
+
+      var scale = Math.max(2, Math.floor(window.devicePixelRatio || 2)) + 1;
+      html2canvas(output, { scale: scale, backgroundColor: '#ffffff', useCORS: true })
+        .then(function(canvas){
+          return new Promise(function(resolve, reject){
+            canvas.toBlob(function(blob){
+              if (!blob) return reject(new Error('PNG se nepodařilo vytvořit.'));
+              var file = new File([blob], 'vycetka.png', { type: 'image/png' });
+
+              if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({ files: [file], title: 'Výčetka řidiče', text: 'Výčetka řidiče (PNG)' }).then(resolve).catch(reject);
+              } else if (navigator.clipboard && window.ClipboardItem) {
+                navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
+                  .then(function(){ alert('Obrázek výčetky byl zkopírován do schránky.'); resolve(); })
+                  .catch(function(){
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a'); a.href = url; a.download = 'vycetka.png';
+                    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+                    resolve();
+                  });
+              } else {
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a'); a.href = url; a.download = 'vycetka.png';
+                document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+                resolve();
+              }
+            }, 'image/png');
+          });
+        })
+        .catch(function(e){ alert('Sdílení obrázku selhalo: ' + (e && e.message ? e.message : e)); })
+        .finally(function(){
+          output.classList.remove('capture-export');
+          if (prevTheme !== null) root.setAttribute('data-theme', prevTheme);
+          else root.removeAttribute('data-theme');
+        });
+    }, true);
+  } catch(e) {}
+});
+</script>
+
 </body>
 </html>
