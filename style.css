@@ -138,5 +138,3 @@ button .icon{ margin-right:8px; }
 .row.accent-pay { background: rgba(0, 200, 83, 0.12); border-left: 3px solid rgba(0, 200, 83, 0.6); }
 .row.accent-doplatek { background: rgba(255, 82, 82, 0.12); border-left: 3px solid rgba(255, 82, 82, 0.6); }
 .row.accent-odev .val, .row.accent-pay .val, .row.accent-doplatek .val { font-weight: 700; }
-
-#shareImgBtn{cursor:pointer}
